@@ -1,0 +1,201 @@
+syntax = "proto3";
+
+package editorapi;
+option go_package = "study/proto/editorapi";
+
+message SmartsheetResourceRequest {
+  string header = 1;
+  string fileID = 2;
+  string sheetID = 3;
+  oneof request {
+    GetViewsRequest getViews = 4;
+    GetRecordsRequest getRecords = 5;
+    GetFieldsRequest getFields = 6;
+    AddViewRequest addView = 7;
+    DeleteViewsRequest deleteViews = 8;
+    AddRecordsRequest addRecords = 9;
+    UpdateRecordsRequest updateRecords = 10;
+    DeleteRecordsRequest deleteRecords = 11;
+    AddFieldsRequest addFields = 12;
+    UpdateFieldsRequest updateFields = 13;
+    DeleteFieldsRequest deleteFields = 14;
+  }
+}
+
+message SmartsheetResourceResponse {
+  string header = 1;
+  GetViewsResponse getViews = 2;
+  GetRecordsResponse getRecords = 3;
+  GetFieldsResponse getFields = 4;
+  AddViewResponse addView = 5;
+  DeleteViewsResponse deleteViews = 6;
+  AddRecordsResponse addRecords = 7;
+  UpdateRecordsResponse updateRecords = 8;
+  DeleteRecordsResponse deleteRecords = 9;
+  AddFieldsResponse addFields = 10;
+  UpdateFieldsResponse updateFields = 11;
+  DeleteFieldsResponse deleteFields = 12;
+}
+
+message View {
+  string viewID = 1;
+  string viewName = 2;
+  string viewType = 3;
+}
+
+message Record {
+  string recordID = 1;
+  int64 createTime = 2;
+  int64 updateTime = 3;
+  map<string, string> values = 4; // key 为 fieldName
+}
+
+message AddRecordsReq {
+  map<string, string> values = 1;
+}
+
+message UpdateRecordsReq {
+  string RecordID = 1;
+  map<string, string> values = 2;
+}
+
+message Field {
+  string fieldID = 1;
+  string fieldName = 2;
+  string fieldType = 3;
+  string property = 4;
+}
+
+message AddFieldsReq {
+  string fieldName = 1;
+  string fieldType = 2;
+  string property = 3;
+}
+
+message Sort {
+  string fieldName = 1;
+  bool desc = 2;
+}
+
+// 获取所有视图请求
+message GetViewsRequest {
+  repeated string viewIDs = 1;
+  uint32 offset = 2; // 偏移量，初始值为 0
+  uint32 limit = 3; // 分页大小, 每页返回多少条数据
+}
+
+// 获取指定表格指定子表中的所有视图回包
+message GetViewsResponse {
+  uint32 total = 1;  // 符合筛选条件的总记录条数
+  bool hasMore = 2;  // 是否还有更多项
+  uint32 next = 3;   // 下次下一个搜索结果的偏移量
+  repeated View views = 4;
+}
+
+// 新建视图请求，创建一个视图
+message AddViewRequest {
+  string viewName = 1;
+  string viewType = 2;
+}
+
+// 新建视图回包
+message AddViewResponse {
+  View view = 1;
+}
+
+// 删除指定表格指定子表中的指定视图请求
+message DeleteViewsRequest {
+  repeated string viewIDs = 1;
+}
+
+// 删除指定表格指定子表中的指定视图回包
+message DeleteViewsResponse {}
+
+// 获取指定表格和子表下指定视图中的所有记录、指定返回记录里要包含的字段、获取指定筛选条件和指定数量的记录三个接口合一
+message GetRecordsRequest {
+  string viewID = 1;
+  repeated string recordIDs = 2;
+  repeated string fieldNames = 3;
+  repeated Sort sort = 4;
+  uint32 offset = 5;
+  uint32 limit = 6;
+}
+
+// 获取指定表格和子表下指定视图中的所有记录回包
+message GetRecordsResponse {
+  uint32 total = 1;
+  bool hasMore = 2;
+  uint32 next = 3;
+  repeated Record records = 4;
+}
+
+// 在指定表格和子表中创建一到多条新记录请求
+message AddRecordsRequest {
+  repeated AddRecordsReq records = 1;
+}
+
+// 在指定表格和子表中创建一到多条新记录回包
+message AddRecordsResponse {
+  repeated Record records = 1;
+}
+
+// 更新指定表格和子表中的一到多条记录请求
+message UpdateRecordsRequest {
+  repeated UpdateRecordsReq records = 1;
+}
+
+// 更新指定表格和子表中的一到多条记录回包
+message UpdateRecordsResponse {
+  repeated Record records = 1;
+}
+
+// 删除指定表格和子表中的一到多条记录请求
+message DeleteRecordsRequest {
+  repeated string recordIDs = 1;
+}
+
+// 删除指定表格和子表中的一到多条记录回包
+message DeleteRecordsResponse {}
+
+// 获取指定表格和子表中的所有字段请求
+message GetFieldsRequest {
+  string viewID = 1;
+  uint32 offset = 2;
+  uint32 limit = 3;
+}
+
+// 获取指定表格和子表中的所有字段回包
+message GetFieldsResponse {
+  uint32 total = 1;
+  bool hasMore = 2;
+  uint32 next = 3;
+  repeated Field fields = 4;
+}
+
+// 新增字段请求
+message AddFieldsRequest {
+  repeated AddFieldsReq fields = 1;
+}
+
+// 新增字段回包
+message AddFieldsResponse {
+  repeated Field fields = 1;
+}
+
+// 更新字段请求
+message UpdateFieldsRequest {
+  repeated Field fields = 1;
+}
+
+// 更新字段回包
+message UpdateFieldsResponse {
+  repeated Field fields = 1;
+}
+
+// 删除字段请求
+message DeleteFieldsRequest {
+  repeated string fieldIDs = 1;
+}
+
+// 删除字段回包
+message DeleteFieldsResponse {}

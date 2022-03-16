@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package oneof;
+option go_package = "study/proto/oneof";
+
+message StatusTest {
+    string jk = 1;
+    oneof show {
+        string test = 2;
+        int32 hh = 3;
+    }
+}
+
+message Test {
+    int32 bar  = 1;
+    StatusTest st = 2;
+}
+
+message NiuYa {
+    int32 foo = 1;
+    string oy = 2;
+}

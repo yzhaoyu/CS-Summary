@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package smartsheetapi;
+option go_package = "study/proto/smartsheetapi";
+
+// 后台提供给开平使用的 Smartsheet RPC 接口，分为查询资源和编辑资源两种类型
+service SmartsheetOpenAPIService {
+  rpc GetSmartsheetResource(GetSmartsheetResourceReq) returns (GetSmartsheetResourceRsp);
+  rpc EditSmartsheetResource(EditSmartsheetResourceReq) returns (EditSmartsheetResourceRsp);
+}
+
+enum ResourceType {
+  RESOURCE_TYPE_UNKNOWN = 0;
+  RESOURCE_TYPE_VIEW = 1;
+  RESOURCE_TYPE_RECORD = 2;
+  RESOURCE_TYPE_FIELD = 3;
+  RESOURCE_TYPE_ATTACHMENT = 4;
+}
+
+enum CommandType {
+  COMMAND_TYPE_UNKNOWN = 0;
+  COMMAND_TYPE_ADDVIEW = 1;
+  COMMAND_TYPE_DELETEVIEWS = 2;
+  COMMAND_TYPE_ADDRECORDS = 3;
+  COMMAND_TYPE_UPDATERECORDS = 4;
+  COMMAND_TYPE_DELETERECORDS = 5;
+  COMMAND_TYPE_ADDFIELDS = 6;
+  COMMAND_TYPE_UPDATEFIELDS = 7;
+  COMMAND_TYPE_DELETEFIELDS = 8;
+}
+
+// smartsheet api 查询请求包
+message GetSmartsheetResourceReq {
+  string padID = 1; // 文档ID
+  string subID = 2; // 子表ID
+  ResourceType type = 3; // 要获取的资源类型，包括view、field、record、attachment
+  bytes params = 4; // 每种资源涉及到的参数
+}
+
+// smartsheet api 查询回包
+message GetSmartsheetResourceRsp {
+  bytes data = 1; // 后台返回的数据
+}
+
+// smartsheet api 编辑请求包
+message EditSmartsheetResourceReq {
+  string padID = 1;
+  string subID = 2;
+  CommandType command = 3;
+  bytes params = 4;
+}
+
+// smartsheet api 编辑请求回包
+message EditSmartsheetResourceRsp {
+  bytes data = 1; // 后台返回的数据
+}
