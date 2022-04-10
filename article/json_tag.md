@@ -1,4 +1,4 @@
-### Golang中"omitempty"关键字学习
+## Golang中"omitempty"关键字学习
 
 #### 用法
 在Golang中我们经常在JSON数据与struct数据类型之间进行转换；通过在struct中使用tag可以指定JSON的key，例如在表示一个地址数据的时候，JSON数据如下所示：
@@ -10,7 +10,9 @@
     "province": "Guangdong"
 }
 ```
+
 与之对应的结构体可以表示如下：
+
 ```go
 type Location struct {
 	Star     string `json:"planet"`         // 星球
@@ -34,7 +36,7 @@ type Location struct {
 	Nation     string       `json:"country"`
 	Province   string       `json:"province"`
 	City       string       `json:"city,omitempty"`
-  Coordinate coordinate   `json:"coordinate,omitempty"` 
+	Coordinate coordinate   `json:"coordinate,omitempty"` 
 }
 
 type coordinate struct {
@@ -57,6 +59,7 @@ type coordinate struct {
     }
 }
 ```
+
 为了达到我们想要的效果，可以把坐标定义为指针类型，这样 Golang 就能知道一个指针的“空值”是多少了，否则面对一个我们自定义的结构， Golang 是猜不出我们想要的空值的。于是有了如下的结构体定义
 
 ```go
@@ -66,7 +69,7 @@ type Location struct {
 	Nation     string       `json:"country"`
 	Province   string       `json:"province"`
 	City       string       `json:"city,omitempty"`
-  Coordinate *coordinate  `json:"coordinate,omitempty"` 
+	Coordinate *coordinate  `json:"coordinate,omitempty"` 
 }
 
 type coordinate struct {
@@ -74,7 +77,9 @@ type coordinate struct {
 	Lng float64 `json:"longitude"`
 }
 ```
+
 此时相应输出为：
+
 ```json
 {
     "planet": "Earth",
@@ -83,6 +88,7 @@ type coordinate struct {
     "province": "Guangdong"
 }
 ```
+
 **陷阱二**
 另一个“陷阱”是，对于用 omitempty 定义的 field ，如果给它赋的值恰好等于默认空值的话，在转为 json 之后也不会输出这个 field 。比如说上面定义的经纬度坐标结构体，如果我们将经纬度两个 field 都加上 omitempty
 
@@ -110,6 +116,7 @@ func main() {
 	fmt.Printf("%s\n", string(coordinateBytes))
 }
 ```
+
 最终我们得到了一个 `{}`
 
 这个坐标消失不见了！但我们的设想是，如果一个地点没有经纬度信息，则悬空，这没有问题，但对于“原点坐标”，我们在确切知道它的经纬度的情况下，（0.0, 0.0）仍然被忽略了。正确的写法也是将结构体内的定义改为指针
@@ -120,6 +127,7 @@ type coordinate struct {
 	Lng *float64 `json:"longitude"`
 }
 ```
+
 这样空值就从 float64 的 0.0 变为了指针类型的 nil ，我们就能看到正确的经纬度输出。
 
 ```json
